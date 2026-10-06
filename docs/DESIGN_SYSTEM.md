@@ -36,11 +36,11 @@ Three families, each with a fixed role. They're loaded with `next/font` in `src/
 
 | Token         | Family (current)   | Role                                                         |
 | ------------- | ------------------ | ------------------------------------------------------------ |
-| `font-serif`  | Playfair Display   | Titles: masthead, section, column, card, drawer              |
+| `font-serif`  | Lora (Playfair Display until stage 3) | Titles: masthead, section, column, card, drawer |
 | `font-sans`   | Inter              | UI: labels, buttons, tabs, authors, notes                    |
 | `font-mono`   | JetBrains Mono     | Data: manuscript IDs, dates, counters, percentages, word counts |
 
-The prototype's default serif is **Lora** (other options: Playfair Display, EB Garamond, DM Serif Display). The choice is still open, see [ROADMAP.md](ROADMAP.md).
+**Decision:** the serif is **Lora**, the prototype's default (it also offered Playfair Display, EB Garamond and DM Serif Display). The switch happens in stage 3 together with the font wiring fix, see [ROADMAP.md](ROADMAP.md).
 
 ### Type scale used in the prototype
 
@@ -154,3 +154,5 @@ Taken from porting `ManuscriptCard` to `entities/book/ui/BookCard.tsx`:
 ## Not ported
 
 `design-reference/tweaks-panel.jsx` is a Claude Design tool for live font switching, not part of the product. The fonts it offers are listed under [Typography](#typography).
+
+Note: the cheat sheet above was written while `BookCard` lived in the working tree. That code is set aside until stage 3 and isn't in `develop` yet.
