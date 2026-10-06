@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Editorial Flow
 
-## Getting Started
+A production board for a book publishing house. Every manuscript moves through six stages, from **Acquisition** to **To Press**. Editors follow deadlines, progress and workload on a kanban board styled like a printed ledger.
 
-First, run the development server:
+> Status: early development. The UI is being ported from a Claude Design prototype (`design-reference/`) to Next.js + Tailwind, following Feature-Sliced Design. See the [roadmap](docs/ROADMAP.md).
+
+## Features (planned for MVP)
+
+- **Kanban board** with six production stages and manuscript cards
+- **Masthead** with search (title, author, manuscript ID) and tabs: All / Assigned to me / Urgent
+- **Detail drawer** with metadata, progress, latest note, stage timeline and an "Advance stage" action
+- **Drag & drop** between and within columns, with optimistic updates
+- Later: stats bento, create/edit forms, list and calendar views
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Script          | What it does                                   |
+| --------------- | ---------------------------------------------- |
+| `npm run dev`   | Start the dev server                           |
+| `npm run build` | Production build                               |
+| `npm run start` | Serve the production build                     |
+| `npm run lint`  | ESLint (flat config, Next.js core-web-vitals)  |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+A pre-commit hook (husky + lint-staged) runs `eslint --fix` on staged `*.ts` / `*.tsx` files.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech stack
 
-## Learn More
+| Area          | Library                                            | Status      |
+| ------------- | -------------------------------------------------- | ----------- |
+| Framework     | Next.js 16 (App Router, React Compiler), React 19  | in use      |
+| Styling       | Tailwind CSS v4 (`@theme` tokens), `clsx` + `tailwind-merge` | in use |
+| Icons         | `lucide-react`                                     | in use      |
+| Fonts         | `next/font`: Inter, Playfair Display, JetBrains Mono | in use    |
+| Server state  | `@tanstack/react-query`                            | planned     |
+| UI state      | `mobx` + `mobx-react-lite`                         | planned     |
+| Drag & drop   | `@dnd-kit/core`, `@dnd-kit/sortable`               | planned     |
+| Animation     | `framer-motion`                                    | planned     |
+| Forms         | `react-hook-form` + `zod` + `@hookform/resolvers`  | planned     |
+| Database      | SQLite via Drizzle ORM (Turso in production)       | planned (MVP-2) |
+| Tooling       | TypeScript (strict), ESLint 9, husky, lint-staged  | in use      |
 
-To learn more about Next.js, take a look at the following resources:
+## Project structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+  app/        # Next.js routes, root layout, providers, global styles
+  widgets/    # composite page blocks (board, masthead, drawer, …)
+  features/   # user interactions (filter, search, move book, …)
+  entities/   # domain: book, stage, editor
+  shared/     # ui kit, lib helpers, api base
+design-reference/   # Claude Design prototype (reference only, not built)
+docs/               # project documentation
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentation
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Architecture](docs/ARCHITECTURE.md): FSD layers, import rules, data model, data flow, git workflow
+- [Design system](docs/DESIGN_SYSTEM.md): tokens, typography, recurring patterns, prototype → Tailwind cheat sheet
+- [Roadmap](docs/ROADMAP.md): stages, component porting status, known issues
