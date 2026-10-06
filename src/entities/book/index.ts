@@ -1,5 +1,5 @@
-export { bookSchema, bookFlagSchema } from "./model/book";
-export type { Book, BookFlag } from "./model/book";
+export { bookSchema } from "./model/book";
+export type { Book } from "./model/book";
 export { MOCK_BOOKS } from "./model/mocks";
 export { isUrgent } from "./lib/isUrgent";
 export { groupByStage } from "./lib/groupByStage";

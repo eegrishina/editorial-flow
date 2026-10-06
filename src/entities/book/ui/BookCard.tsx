@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, FileText, BookOpen } from "lucide-react";
+import { Calendar, FileText, BookOpen, CircleDashed } from "lucide-react";
 import type { Book } from "../model/book";
 import { isUrgent } from "../lib/isUrgent";
 import { cn, formatWords, formatDate } from "@/shared/lib";
@@ -20,7 +20,6 @@ export const BookCard = ({
   className,
 }: BookCardProps) => {
   const urgent = isUrgent(book);
-  const review = book.flag === "review";
 
   return (
     <article
@@ -43,16 +42,19 @@ export const BookCard = ({
           № {book.id}
         </span>
         <div className="flex items-center gap-2">
-          {urgent && (
+          {/* Only one flag fits on the card, so urgent outranks awaiting; both stay in the data */}
+          {urgent ? (
             <span className="flex items-center gap-1 font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-accent">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
               urgent
             </span>
-          )}
-          {review && (
-            <span className="font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-ink-50">
-              <span className="text-[13px] leading-none">◌</span> review
-            </span>
+          ) : (
+            book.awaiting && (
+              <span className="flex items-center gap-1 font-sans text-[9px] font-medium uppercase tracking-[0.2em] text-ink-50">
+                <CircleDashed size={10} strokeWidth={2} aria-hidden />
+                awaiting
+              </span>
+            )
           )}
           {book.editor && <EditorChip name={book.editor.name} />}
         </div>
@@ -88,13 +90,16 @@ export const BookCard = ({
       {/* HOVER REVEAL: Extra Metadata */}
       <div className="grid transition-all duration-300 ease-out grid-template-rows-0 group-hover:grid-template-rows-1 mt-0">
         <div className="overflow-hidden">
-          <div className="mt-3 pt-3 flex items-center justify-between border-t border-dashed border-rule">
-            <span className="text-[10px] font-sans uppercase tracking-[0.14em] text-ink-50">
+          <div className="mt-3 pt-3 flex items-center justify-between gap-3 border-t border-dashed border-rule">
+            <span
+              title={book.genre}
+              className="min-w-0 truncate text-[10px] font-sans uppercase tracking-[0.14em] text-ink-50"
+            >
               {book.genre}
             </span>
 
             {/* Metadata */}
-            <div className="flex items-center gap-3 font-mono text-[10px] text-ink-50">
+            <div className="flex shrink-0 items-center gap-3 whitespace-nowrap font-mono text-[10px] text-ink-50">
               <span className="flex items-center gap-1">
                 <FileText size={10} strokeWidth={1.5} />
                 {formatWords(book.wordCount)} w

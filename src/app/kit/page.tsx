@@ -110,11 +110,12 @@ export default function KitPage() {
       </Section>
 
       <section className="space-y-4">
-        <Kicker>BookCard — default · urgent · review · selected (hover to reveal details)</Kicker>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 bg-ground">
-          <BookCard book={card("MS-2003")} />
+        <Kicker>BookCard — default · urgent · awaiting · urgent + awaiting · selected (hover to reveal details)</Kicker>
+        <div className="grid grid-cols-[repeat(auto-fill,280px)] gap-3 bg-ground">
+          <BookCard book={card("MS-2017")} />
           <BookCard book={card("MS-1987")} />
           <BookCard book={card("MS-2041")} />
+          <BookCard book={card("MS-1922")} />
           <BookCard book={card("MS-1908")} isSelected />
         </div>
       </section>

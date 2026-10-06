@@ -14,6 +14,8 @@ export function makeBook(overrides: Partial<Book> = {}): Book {
     submitted: "2026-01-01",
     deadline: "2026-02-01",
     progress: 0,
+    urgent: false,
+    awaiting: false,
     note: "",
     ...overrides,
   };

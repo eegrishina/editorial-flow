@@ -33,7 +33,7 @@ describe("BookCard", () => {
   });
 
   it("marks an urgent book: label, accent border with a solid edge, accent progress", () => {
-    render(<BookCard book={{ ...book, flag: "urgent" }} />);
+    render(<BookCard book={{ ...book, urgent: true }} />);
 
     expect(screen.getByText("urgent")).toHaveClass("text-accent");
     expect(card()).toHaveClass("border-accent/40", "border-l-accent", "[border-left-style:solid]");
@@ -48,12 +48,20 @@ describe("BookCard", () => {
     expect(screen.getByRole("heading").className).not.toMatch(/accent/);
   });
 
-  it("marks a book in review", () => {
-    render(<BookCard book={{ ...book, flag: "review" }} />);
+  it("marks a book awaiting a decision without the urgent accent", () => {
+    render(<BookCard book={{ ...book, awaiting: true }} />);
 
-    expect(screen.getByText(/review/)).toBeInTheDocument();
+    expect(screen.getByText(/awaiting/)).toBeInTheDocument();
     expect(screen.queryByText("urgent")).not.toBeInTheDocument();
     expect(card()).not.toHaveClass("border-l-accent");
+  });
+
+  it("shows only the urgent label when a book is urgent and awaiting", () => {
+    render(<BookCard book={{ ...book, urgent: true, awaiting: true }} />);
+
+    expect(screen.getByText("urgent")).toBeInTheDocument();
+    expect(screen.queryByText(/awaiting/)).not.toBeInTheDocument();
+    expect(card()).toHaveClass("border-l-accent");
   });
 
   it("hides the editor chip when nobody is assigned", () => {

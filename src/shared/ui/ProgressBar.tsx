@@ -15,13 +15,13 @@ export const ProgressBar = ({
   className,
 }: ProgressBarProps) => {
   return (
-    <div className={cn("flex items-center gap-2 w-full", className)}>
+    <div className={cn("flex min-w-0 items-center gap-2 w-full", className)}>
       <progress
         value={value}
         max={100}
         aria-label={label}
         className={cn(
-          "flex-1 h-0.75 rounded-full overflow-hidden appearance-none bg-ink-30/10",
+          "min-w-0 flex-1 h-0.75 rounded-full overflow-hidden appearance-none bg-ink-30/10",
           "[&::-webkit-progress-bar]:bg-ink-30/10",
           accent
             ? "[&::-webkit-progress-value]:bg-accent [&::-moz-progress-bar]:bg-accent"

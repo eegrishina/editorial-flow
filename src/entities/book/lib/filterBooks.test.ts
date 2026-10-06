@@ -6,10 +6,10 @@ const me = { id: "mr", name: "M. Reyes" };
 const colleague = { id: "pn", name: "P. Nwosu" };
 
 const books = [
-  makeBook({ id: "MS-1987", title: "Northing & Easting", author: "Per Lindqvist", editor: me, flag: "urgent" }),
-  makeBook({ id: "MS-2049", title: "Saltwater Atlas", author: "Daniel Okafor", editor: colleague, flag: "review" }),
+  makeBook({ id: "MS-1987", title: "Northing & Easting", author: "Per Lindqvist", editor: me, urgent: true }),
+  makeBook({ id: "MS-2049", title: "Saltwater Atlas", author: "Daniel Okafor", editor: colleague, awaiting: true }),
   makeBook({ id: "MS-2017", title: "Quiet Apparatus", author: "T. Halvorsen", editor: me }),
-  makeBook({ id: "MS-1922", title: "The Empty Quarter", author: "Idris al-Mansouri", flag: "urgent" }),
+  makeBook({ id: "MS-1922", title: "The Empty Quarter", author: "Idris al-Mansouri", urgent: true }),
 ];
 
 const all: FilterBooksParams = { filter: "all", query: "", currentEditorId: me.id };
