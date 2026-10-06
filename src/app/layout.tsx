@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, JetBrains_Mono } from "next/font/google";
+import { Inter, Lora, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const sans = Inter({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-inter",
 });
 
-const serif = Playfair_Display({
+const lora = Lora({
   subsets: ["latin"],
-  variable: "--font-serif",
+  variable: "--font-lora",
 });
 
-const mono = JetBrains_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-jetbrains-mono",
 });
 
 export const metadata: Metadata = {
@@ -29,13 +29,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
-      {/* Подключаем переменные шрифтов к body и задаем базовый фон */}
-      <body
-        className={`${sans.variable} ${serif.variable} ${mono.variable} min-h-full bg-ground text-ink font-sans`}
-      >
-        {children}
-      </body>
+    // Переменные шрифтов вешаем на <html>, чтобы их видели и Preflight, и утилиты font-*
+    <html
+      lang="en"
+      className={`${inter.variable} ${lora.variable} ${jetbrainsMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full bg-ground text-ink">{children}</body>
     </html>
   );
 }

@@ -5,9 +5,8 @@ export default defineConfig({
     tsconfigPaths: true, // "@/*" alias from tsconfig.json
   },
   test: {
-    // Pure functions only for now; switch to "jsdom" + React Testing Library
-    // when component tests arrive (stage 3)
-    environment: "node",
+    environment: "jsdom", // browser-like DOM for component tests
+    setupFiles: ["./vitest.setup.ts"],
     include: ["src/**/*.test.{ts,tsx}"],
   },
 });

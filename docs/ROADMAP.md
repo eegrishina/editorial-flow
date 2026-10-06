@@ -28,12 +28,15 @@ Each stage gets its own branch from `develop` and must pass `npm run lint`, `npx
 - [x] `entities/book/lib`: `isUrgent`, `groupByStage`, `filterBooks`
 - [x] Vitest set up; helpers and mocks covered by unit tests
 
-#### Stage 3 — UI kit (`feat/ui-kit`)
-- [ ] Font wiring per the Next.js recipe ([known issue 7](#known-issues)); serif switches to **Lora**
-- [ ] Bring back the early UI work: `shared/lib` (`cn`, `formatDate`, `formatWords`), `EditorChip`, `ProgressBar`, `BookCard` + hover reveal utilities
-- [ ] Adapt `BookCard` to the new `Book` model and fix [known issues](#known-issues) 1, 2, 5, 6
-- [ ] New kit components: `Dashed`, `Button` (ghost / solid / accent), `IconButton`, `Kicker`, `Counter`, `Tag`, `SearchInput`, `AvatarStack`
-- [ ] Component tests: `jsdom` + React Testing Library
+#### Stage 3 — UI kit (`feat/ui-kit`) ✅
+- [x] Font wiring per the Next.js recipe ([known issue 7](#known-issues)); serif switched to **Lora**
+- [x] Early UI work back: `shared/lib` (`cn`, `formatDate`, `formatWords`), `EditorChip`, `ProgressBar`, `BookCard` + hover reveal utilities
+- [x] `BookCard` adapted to the new `Book` model; [known issues](#known-issues) 1, 2, 5, 6 fixed
+- [x] `ProgressBar` made domain-agnostic (`accent` / `label` props instead of `isUrgent`)
+- [x] New kit components: `Dashed`, `Kicker`, `Counter`, `Button` (ghost / solid / accent / subtle), `IconButton`, `SearchInput`, `AvatarStack`
+- [x] Component tests: `jsdom` + React Testing Library + jest-dom
+- [x] `/kit` style guide page for visual checks against the prototype
+- `Tag` dropped: the prototype uses `GenreTag` in one place only (genre on `BookCard`), so it stays inline
 
 #### Stage 4 — Mock API + React Query
 - [ ] `entities/book/api/booksApi.ts`: async `getBooks()` / `updateBook(id, patch)` over an in-memory copy of the mocks, with artificial delay and an optional random failure
@@ -84,13 +87,17 @@ Each stage gets its own branch from `develop` and must pass `npm run lint`, `npx
 | -------------------------------- | ---------------------------------- | ------ |
 | `TOKENS`                         | `@theme` in `app/globals.css`      | ✅     |
 | `EDITORS`, `COLUMNS`, `CARDS` data | `entities/editor`, `entities/stage`, `entities/book` mocks | ✅ |
-| `cls`, `fmtWords`                | `shared/lib`: `cn`, `formatWords`  | ⏸ written, returns in stage 3 |
-| `ManuscriptCard`                 | `entities/book/ui/BookCard`        | ⏸ written, returns in stage 3 |
-| `EditorChip`                     | `shared/ui/EditorChip`             | ⏸ written, returns in stage 3 |
-| `ProgressBar`                    | `shared/ui/ProgressBar`            | ⏸ written, returns in stage 3 |
-| `Dashed`                         | `shared/ui/Dashed`                 | ⏳ Stage 3 |
-| `GenreTag`                       | `shared/ui/Tag`                    | ⏳ Stage 3 (inlined in BookCard for now) |
-| `ghostBtn` / `solidBtn` / accent button | `shared/ui/Button`          | ⏳ Stage 3 |
+| `cls`, `fmtWords`                | `shared/lib`: `cn`, `formatWords`, `formatDate` | ✅ |
+| `ManuscriptCard`                 | `entities/book/ui/BookCard`        | ✅     |
+| `EditorChip`                     | `shared/ui/EditorChip`             | ✅     |
+| `ProgressBar`                    | `shared/ui/ProgressBar`            | ✅     |
+| `Dashed`                         | `shared/ui/Dashed`                 | ✅     |
+| Kicker labels, padded counters   | `shared/ui/Kicker`, `shared/ui/Counter` | ✅ |
+| `ghostBtn` / `solidBtn` / accent / "add" buttons | `shared/ui/Button` | ✅    |
+| Drawer close button              | `shared/ui/IconButton`             | ✅     |
+| Masthead search box              | `shared/ui/SearchInput`            | ✅     |
+| Masthead editor avatars          | `shared/ui/AvatarStack`            | ✅     |
+| `GenreTag`                       | inline in `BookCard`               | ✖ not a separate component (used once) |
 | `Column`                         | `widgets/kanban-board/BoardColumn` | ⏳ Stage 5 |
 | Footer                           | `widgets/page-footer`              | ⏳ Stage 5 |
 | Masthead, search, tabs           | `widgets/masthead` + features      | ⏳ Stage 6 |
@@ -100,13 +107,13 @@ Each stage gets its own branch from `develop` and must pass `npm run lint`, `npx
 
 ## Known issues
 
-1. **`text-wrap-pretty` does nothing.** It isn't a Tailwind v4 class (`BookCard.tsx`). Use `text-pretty`.
-2. **The urgent card's left border is dashed, not solid.** `border-dashed` sets every side and Tailwind has no per-side border style. The prototype uses `2px solid accent`. Fix with an arbitrary property, e.g. `[border-left-style:solid]`.
+1. ~~**`text-wrap-pretty` does nothing.**~~ Fixed in stage 3: `text-pretty`.
+2. ~~**The urgent card's left border is dashed, not solid.**~~ Fixed in stage 3 with `[border-left-style:solid]`, which the built CSS orders after `border-dashed` and `border-l-2`.
 3. ~~**FSD violation.** `shared/api/mockData.ts` imports from `@/entities/book`.~~ Fixed in stage 2: mocks live in entities.
-4. ~~**Status model mismatch.** `BookStatus` had 5 values for 6 columns.~~ Fixed in stage 2: `status` is a `Stage`. `BookCard` still has to be adapted in stage 3.
-5. **Unneeded `"use client"`.** `ProgressBar` uses no hooks or handlers.
-6. **Word count suffix missing.** The card shows `92.4k`, the prototype `92.4k w`.
-7. **Font wiring doesn't follow the Next.js recipe.** `@theme` hardcodes the family names, while `next/font` sets same-named `--font-*` variables on `<body>`, so `<html>`-level styles (Preflight) never see the loaded fonts. The recipe in `node_modules/next/dist/docs/01-app/03-api-reference/02-components/font.md` (Tailwind v4 section) is: give each font its own variable (`variable: "--font-inter"`), put the classes on `<html>`, and map them in CSS with `@theme inline { --font-sans: var(--font-inter); }`.
-8. **Many arbitrary values.** Font sizes (`text-[10px]`, …) and letter-spacing (`tracking-[0.22em]`, …) repeat everywhere. Consider adding `--text-*` and `--tracking-*` tokens to `@theme`, or covering them with `Kicker` / `Counter` components.
+4. ~~**Status model mismatch.** `BookStatus` had 5 values for 6 columns.~~ Fixed in stage 2 (model) and stage 3 (`BookCard`).
+5. ~~**Unneeded `"use client"` in `ProgressBar`.**~~ Fixed in stage 3.
+6. ~~**Word count suffix missing.**~~ Fixed in stage 3: `92.4k w`.
+7. ~~**Font wiring doesn't follow the Next.js recipe.**~~ Fixed in stage 3: `--font-inter` / `--font-lora` / `--font-jetbrains-mono` on `<html>`, mapped in `@theme inline` (recipe: `node_modules/next/dist/docs/01-app/03-api-reference/02-components/font.md`, Tailwind v4 section).
+8. **Many arbitrary values.** Font sizes (`text-[10px]`, …) and letter-spacing (`tracking-[0.22em]`, …) still repeat in `BookCard` and will in the widgets. `Kicker` and `Counter` cover the most common cases; consider `--text-*` / `--tracking-*` tokens in `@theme` if the widgets add more.
 9. **Unused dependencies until their stage:** dnd-kit, React Query, MobX, framer-motion, react-hook-form, @hookform/resolvers.
 10. **`npm audit` warnings in dev tooling.** `brace-expansion` and `baseline-browser-mapping` come in through `eslint`, `eslint-config-next` and `next`. They don't ship to the browser; review with `npm audit` as a separate chore.
