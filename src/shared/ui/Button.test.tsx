@@ -12,13 +12,14 @@ describe("Button", () => {
   });
 
   it.each([
-    ["solid", "bg-ink"],
-    ["accent", "bg-accent"],
-    ["subtle", "bg-transparent"],
-  ] as const)("applies the %s variant", (variant, className) => {
+    ["ghost", "bg-card", "hover:bg-ground/50"],
+    ["solid", "bg-ink", "hover:bg-ink-70"],
+    ["accent", "bg-accent", "hover:bg-accent/85"],
+    ["subtle", "bg-transparent", "hover:bg-card"],
+  ] as const)("applies the %s variant with a hover state", (variant, base, hover) => {
     render(<Button variant={variant}>Go</Button>);
 
-    expect(screen.getByRole("button")).toHaveClass(className);
+    expect(screen.getByRole("button")).toHaveClass(base, hover);
   });
 
   it("passes native props through", () => {

@@ -6,7 +6,6 @@ interface KickerProps {
   className?: string;
 }
 
-// Small uppercase label above a value or section: "ACTIVE MANUSCRIPTS", "LATEST NOTE"
 export const Kicker = ({ children, className }: KickerProps) => {
   return (
     <span

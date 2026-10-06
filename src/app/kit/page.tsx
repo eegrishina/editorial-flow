@@ -30,7 +30,6 @@ const Section = ({ title, children }: { title: string; children: ReactNode }) =>
   </section>
 );
 
-// Living style guide: every shared/ui component and BookCard states
 export default function KitPage() {
   return (
     <main className="mx-auto max-w-[1100px] space-y-8 px-8 py-10">

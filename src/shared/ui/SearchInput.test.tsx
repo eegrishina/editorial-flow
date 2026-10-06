@@ -28,4 +28,22 @@ describe("SearchInput", () => {
 
     expect(onChange).toHaveBeenCalledWith("MS-19");
   });
+
+  it("hides and disables the clear button while the box is empty", () => {
+    render(<SearchInput value="" onChange={() => {}} />);
+
+    const clear = screen.getByRole("button", { name: "Clear search" });
+    expect(clear).toBeDisabled();
+    expect(clear).toHaveClass("invisible");
+  });
+
+  it("clears the value and returns focus to the input", () => {
+    const onChange = vi.fn();
+    render(<SearchInput value="quiet" onChange={onChange} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+
+    expect(onChange).toHaveBeenCalledWith("");
+    expect(screen.getByRole("searchbox")).toHaveFocus();
+  });
 });

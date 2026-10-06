@@ -4,13 +4,9 @@ import { cn } from "@/shared/lib";
 export type ButtonVariant = "ghost" | "solid" | "accent" | "subtle";
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  // Filter, Note
   ghost: "bg-card text-ink border border-dashed border-rule font-medium hover:bg-ground/50",
-  // New Acquisition
-  solid: "bg-ink text-ground font-medium",
-  // Advance stage
-  accent: "bg-accent text-card font-semibold tracking-[0.2em]",
-  // "add" at the bottom of a column
+  solid: "bg-ink text-ground font-medium hover:bg-ink-70",
+  accent: "bg-accent text-card font-semibold tracking-[0.2em] hover:bg-accent/85",
   subtle: "bg-transparent text-ink-50 border border-dashed border-rule font-medium hover:bg-card",
 };
 
@@ -18,7 +14,6 @@ interface ButtonProps extends ComponentProps<"button"> {
   variant?: ButtonVariant;
 }
 
-// Uppercase label button; put a lucide icon before the text as a child
 export const Button = ({
   variant = "ghost",
   type = "button",

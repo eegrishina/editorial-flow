@@ -32,12 +32,20 @@ describe("BookCard", () => {
     expect(screen.getByTitle("M. Reyes")).toBeInTheDocument();
   });
 
-  it("marks an urgent book: label, solid accent edge, accent progress", () => {
+  it("marks an urgent book: label, accent border with a solid edge, accent progress", () => {
     render(<BookCard book={{ ...book, flag: "urgent" }} />);
 
-    expect(screen.getByText("urgent")).toBeInTheDocument();
-    expect(card()).toHaveClass("border-l-accent", "[border-left-style:solid]");
+    expect(screen.getByText("urgent")).toHaveClass("text-accent");
+    expect(card()).toHaveClass("border-accent/40", "border-l-accent", "[border-left-style:solid]");
     expect(screen.getByRole("progressbar")).toHaveClass("[&::-webkit-progress-value]:bg-accent");
+  });
+
+  it("keeps the accent color for urgency only, not for hover", () => {
+    render(<BookCard book={book} />);
+
+    expect(card()).toHaveClass("hover:border-ink/40");
+    expect(card().className).not.toMatch(/hover:border-accent/);
+    expect(screen.getByRole("heading").className).not.toMatch(/accent/);
   });
 
   it("marks a book in review", () => {

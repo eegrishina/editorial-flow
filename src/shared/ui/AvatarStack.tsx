@@ -7,7 +7,6 @@ interface AvatarStackProps {
   className?: string;
 }
 
-// Overlapping monogram chips, e.g. the editors in the masthead
 export const AvatarStack = ({ names, max = 4, className }: AvatarStackProps) => {
   const visible = names.slice(0, max);
   const hidden = names.slice(max);
@@ -15,7 +14,6 @@ export const AvatarStack = ({ names, max = 4, className }: AvatarStackProps) => 
   return (
     <div className={cn("flex items-center -space-x-1.5", className)}>
       {visible.map((name, index) => (
-        // white backing so overlapping dashed borders don't show through
         <span key={`${name}-${index}`} className="rounded-full bg-card">
           <EditorChip name={name} className="size-6.5" />
         </span>

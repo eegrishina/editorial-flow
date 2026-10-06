@@ -5,8 +5,6 @@ interface DashedProps {
   className?: string;
 }
 
-// Decorative hairline: 4px ink dashes with 4px gaps at 18% opacity.
-// Use for standalone dividers; boxes use `border-dashed border-rule`.
 export const Dashed = ({ vertical, className }: DashedProps) => {
   return (
     <div

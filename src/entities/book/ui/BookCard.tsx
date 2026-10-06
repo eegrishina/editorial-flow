@@ -28,10 +28,11 @@ export const BookCard = ({
       className={cn(
         "group relative cursor-pointer overflow-hidden transition-colors px-4 pt-3.5 pb-3",
         "bg-card border border-dashed border-rule text-ink",
-        // border-dashed applies to every side; the urgent left edge is solid, as in the prototype
+        // border-dashed sets every side and Tailwind has no per-side style utility,
+        // so the solid urgent edge needs an arbitrary property
         urgent
-          ? "border-l-2 border-l-accent [border-left-style:solid]"
-          : "hover:border-accent/40",
+          ? "border-accent/40 hover:border-accent/70 border-l-2 border-l-accent hover:border-l-accent [border-left-style:solid]"
+          : "hover:border-ink/40",
         isSelected && "outline outline-ink -outline-offset-1",
         className,
       )}
@@ -58,7 +59,7 @@ export const BookCard = ({
       </header>
 
       {/* TITLE & AUTHOR */}
-      <h3 className="mt-3 font-serif text-[19px] font-medium leading-[1.15] text-pretty group-hover:text-accent transition-colors">
+      <h3 className="mt-3 font-serif text-[19px] font-medium leading-[1.15] text-pretty">
         {book.title}
       </h3>
       <div className="mt-1 font-sans text-[12px] text-ink-50">

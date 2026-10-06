@@ -3,7 +3,7 @@ import { Counter } from "./Counter";
 
 interface ProgressBarProps {
   value: number; // 0–100
-  accent?: boolean; // fill with the accent color instead of ink
+  accent?: boolean;
   label?: string; // accessible name of the bar
   className?: string;
 }

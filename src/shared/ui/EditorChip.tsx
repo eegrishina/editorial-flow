@@ -6,7 +6,6 @@ interface EditorChipProps {
 }
 
 export const EditorChip = ({ name, className }: EditorChipProps) => {
-  // "M. Reyes" → "MR"; size via className, e.g. "size-6.5"
   const initials = name
     .split(/\s+/)
     .filter(Boolean)

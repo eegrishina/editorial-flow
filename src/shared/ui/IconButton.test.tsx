@@ -15,6 +15,12 @@ describe("IconButton", () => {
     expect(button).toHaveAttribute("type", "button");
   });
 
+  it("has a neutral hover state", () => {
+    render(<IconButton label="Close" />);
+
+    expect(screen.getByRole("button", { name: "Close" })).toHaveClass("hover:border-ink/40", "hover:bg-ground");
+  });
+
   it("calls onClick", () => {
     const onClick = vi.fn();
     render(<IconButton label="Close" onClick={onClick} />);

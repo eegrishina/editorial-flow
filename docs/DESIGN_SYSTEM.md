@@ -30,7 +30,9 @@ Hex + alpha in the prototype maps to Tailwind opacity modifiers:
 | `hover:bg-[#F5F4F0]`         | `hover:bg-ground`     |
 | `color: "#fff"` on accent button | `text-card`       |
 
-**Rule:** no hex values in components. If a color is missing, add a token to `@theme` first.
+**Rules:**
+- No hex values in components. If a color is missing, add a token to `@theme` first.
+- The accent means **urgency** (and the current stage in the drawer). Never use it for hover or decoration, or urgent cards stop standing out. Hover states stay neutral: borders darken to `ink/40`, titles don't change color.
 
 ## Typography
 
@@ -76,7 +78,7 @@ Reach for a component before writing the classes by hand. Every component accept
 | ------------- | ----------------------------------------- | -------------------------------------------------------- |
 | `Button`      | Any text button                           | `variant`: `ghost` (Filter, Note), `solid` (New Acquisition), `accent` (Advance stage), `subtle` (column "add"); native button props; icon goes first as a child |
 | `IconButton`  | Icon-only button (drawer close)           | `label` (required, becomes `aria-label` and tooltip)     |
-| `SearchInput` | Masthead search                           | `value`, `onChange(value: string)`, `label`, `placeholder` |
+| `SearchInput` | Masthead search; its own gray clear (X) button replaces the browser's | `value`, `onChange(value: string)`, `label`, `placeholder` |
 | `Kicker`      | Uppercase label above a value or section  | `children`                                               |
 | `Counter`     | Mono, zero-padded numbers: `03`, `08%`    | `value`, `pad` (default 2), `suffix`                     |
 | `Dashed`      | Standalone dashed divider                 | `vertical`                                               |
@@ -84,7 +86,7 @@ Reach for a component before writing the classes by hand. Every component accept
 | `EditorChip`  | Monogram chip with up to two initials     | `name`; size via `className` (`size-6.5`)                |
 | `AvatarStack` | Overlapping chips with `+N` overflow      | `names`, `max` (default 4)                               |
 
-Buttons default to `type="button"`, use `cursor-pointer` (Tailwind v4 leaves buttons on the default cursor) and show a focus ring on keyboard focus.
+Buttons default to `type="button"`, use `cursor-pointer` (Tailwind v4 leaves buttons on the default cursor) and show a focus ring on keyboard focus. Hover: `ghost` → `bg-ground/50`, `solid` → `bg-ink-70`, `accent` → `bg-accent/85`, `subtle` → `bg-card`. The dark variants lighten on hover, since ink can't get darker. `IconButton` hover: border `ink/40` + `bg-ground`, visible on both white and ground backgrounds.
 
 ## Recurring patterns
 
@@ -108,7 +110,7 @@ Counters are mono, use `tabular-nums` and are padded to two digits: `<Counter va
 | ------------ | ----------------------------------------------------------------------------------------------- |
 | Urgent flag  | dot `inline-block h-1.5 w-1.5 rounded-full bg-accent` + label `text-[9px] font-medium uppercase tracking-[0.2em] text-accent` |
 | Review flag  | `◌ review`, same label classes with `text-ink-50`                                               |
-| Urgent card  | `border-l-2 border-l-accent [border-left-style:solid]` (`border-dashed` sets every side, Tailwind has no per-side style utility), deadline in `text-accent`, `<ProgressBar accent />` |
+| Urgent card  | dashed border `border-accent/40` (hover `/70`) with a solid 2px left edge `border-l-2 border-l-accent hover:border-l-accent [border-left-style:solid]`, deadline in `text-accent`, `<ProgressBar accent />`. `border-dashed` sets every side and Tailwind has no per-side style utility, hence the arbitrary property; `hover:border-l-accent` keeps the edge saturated because the hover color rule would otherwise win |
 | Selected card| `outline outline-ink -outline-offset-1`                                                         |
 | Stage / load square | filled `block h-2 w-2 bg-ink` (current: `bg-accent`), empty `h-2 w-2 border border-dashed border-ink/33` |
 
