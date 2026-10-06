@@ -19,3 +19,11 @@
   --color-rule: rgba(26, 23, 21, 0.2);
   --color-accent: #8b0000;
 }
+
+@utility grid-template-rows-0 {
+  grid-template-rows: 0fr;
+}
+
+@utility grid-template-rows-1 {
+  grid-template-rows: 1fr;
+}
