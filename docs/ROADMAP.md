@@ -38,6 +38,12 @@ Each stage gets its own branch from `develop` and must pass `npm run lint`, `npx
 - [x] `/kit` style guide page for visual checks against the prototype
 - `Tag` dropped: the prototype uses `GenreTag` in one place only (genre on `BookCard`), so it stays inline
 
+#### Stage 3.5 — Book flags (`refactor/book-flags`)
+- [ ] `flag: "urgent" | "review"` → two independent booleans `urgent` and `awaiting`. A stage says where a book is in the pipeline; flags mark what needs attention on top of it, and a book can be both urgent and awaiting a decision
+- [ ] `review` renamed to `awaiting`: the book waits for someone else's decision (committee, author, designer sign-off), it is not a stage
+- [ ] Mocks flagged from their notes; `isUrgent`, `filterBooks`, `BookCard` and tests updated
+- Done before stage 4 so the mock API and the widgets of stages 5–7 are built on the final model shape
+
 #### Stage 4 — Mock API + React Query
 - [ ] `entities/book/api/booksApi.ts`: async `getBooks()` / `updateBook(id, patch)` over an in-memory copy of the mocks, with artificial delay and an optional random failure
 - [ ] `booksQueryOptions`, `useBooks`, `useUpdateBook` (optimistic update + rollback)
