@@ -25,6 +25,8 @@ npm run dev      # http://localhost:3000
 | `npm run build` | Production build                               |
 | `npm run start` | Serve the production build                     |
 | `npm run lint`  | ESLint (flat config, Next.js core-web-vitals)  |
+| `npm test`      | Vitest in watch mode                           |
+| `npm run test:run` | Vitest, single run                          |
 
 A pre-commit hook (husky + lint-staged) runs `eslint --fix` on staged `*.ts` / `*.tsx` files.
 
@@ -35,12 +37,14 @@ A pre-commit hook (husky + lint-staged) runs `eslint --fix` on staged `*.ts` / `
 | Framework     | Next.js 16 (App Router, React Compiler), React 19  | in use      |
 | Styling       | Tailwind CSS v4 (`@theme` tokens), `clsx` + `tailwind-merge` | in use |
 | Icons         | `lucide-react`                                     | in use      |
-| Fonts         | `next/font`: Inter, Playfair Display, JetBrains Mono | in use    |
+| Fonts         | `next/font`: Inter, Lora, JetBrains Mono           | in use (Lora from stage 3, Playfair Display until then) |
+| Validation    | `zod` (domain schemas, types via `z.infer`)        | in use      |
+| Unit tests    | Vitest                                             | in use      |
 | Server state  | `@tanstack/react-query`                            | planned     |
 | UI state      | `mobx` + `mobx-react-lite`                         | planned     |
 | Drag & drop   | `@dnd-kit/core`, `@dnd-kit/sortable`               | planned     |
 | Animation     | `framer-motion`                                    | planned     |
-| Forms         | `react-hook-form` + `zod` + `@hookform/resolvers`  | planned     |
+| Forms         | `react-hook-form` + `@hookform/resolvers` (zod)    | planned     |
 | Database      | SQLite via Drizzle ORM (Turso in production)       | planned (MVP-2) |
 | Tooling       | TypeScript (strict), ESLint 9, husky, lint-staged  | in use      |
 

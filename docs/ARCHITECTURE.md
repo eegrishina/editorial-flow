@@ -24,6 +24,15 @@ Next.js's `app/` directory doubles as the FSD `app` layer. FSD's `pages` layer i
 
 1. A layer imports **only from layers below it**. `shared` imports nothing from the project, and `entities` never imports from `features`.
 2. Slices on the same layer don't import each other. For example, `features/filter-books` must not import from `features/search-books`. Shared logic moves down a layer.
+   **Exception: entities.** Domain entities reference each other (a book has a stage and an editor), so FSD allows cross-imports on the `entities` layer through an explicit **`@x` API**. The slice that is imported publishes a dedicated file per consumer:
+   ```ts
+   // entities/stage/@x/book.ts — what stage exposes to book
+   export { STAGE_IDS, stageSchema } from "../model/stage";
+
+   // entities/book/model/book.ts
+   import { stageSchema } from "@/entities/stage/@x/book";
+   ```
+   Current links: `book → stage`, `book → editor`. Keep them one-directional (no cycles). Features and widgets never cross-import; a higher layer composes them.
 3. Code outside a slice imports it **only through its public API** (`index.ts`):
    ```ts
    import { BookCard, type Book } from "@/entities/book";       // ✅
@@ -42,6 +51,7 @@ Inside a slice, code is grouped by purpose:
 | `model/` | Types, zod schemas, mocks, stores                        |
 | `api/`   | Data access functions, React Query options and hooks     |
 | `lib/`   | Pure helpers specific to the slice                       |
+| `@x/`    | Cross-import API for another entity (`@x/<consumer>.ts`) |
 
 ### Code conventions
 
@@ -50,6 +60,14 @@ Inside a slice, code is grouped by purpose:
 - Add `"use client"` only to components that use hooks, event handlers or browser APIs.
 - Styles use Tailwind classes built on design tokens. No inline hex colors and no `style={{}}` for static values. See [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md).
 - Path alias `@/*` points to `src/*`.
+- Domain models are **zod schemas**; TypeScript types are inferred with `z.infer`, never written by hand next to a schema. Plain interfaces are fine for internal types (component props, store state).
+
+### Tests
+
+- [Vitest](https://vitest.dev/): `npm test` (watch) or `npm run test:run` (single run). Config: `vitest.config.mts`.
+- Test files sit next to the code they test: `filterBooks.ts` → `filterBooks.test.ts`.
+- Test data comes from factories (`makeBook.fixture.ts`), not from mocks, so tests don't break when mock content changes. Mocks get their own test that validates them against the schema.
+- Environment is `node` for now (pure functions). Component tests (stage 3) will add `jsdom` and React Testing Library.
 
 ## Slice map
 
@@ -57,12 +75,15 @@ Inside a slice, code is grouped by purpose:
 
 ```
 src/
-  app/            layout.tsx (fonts, metadata), page.tsx (card preview), globals.css (tokens)
-  entities/book/  model/types.ts, ui/BookCard.tsx
-  shared/ui/      EditorChip, ProgressBar
-  shared/lib/     cn, formatDate, formatWords
-  shared/api/     mockData.ts   ← violates FSD (imports entities); to be moved
+  app/              layout.tsx (fonts, metadata), page.tsx (placeholder), globals.css (tokens)
+  entities/
+    stage/          model/stage.ts (STAGE_IDS, stageSchema, STAGES), @x/book.ts
+    editor/         model/editor.ts (editorSchema), model/mocks.ts, @x/book.ts
+    book/           model/book.ts (bookSchema), model/mocks.ts,
+                    lib/ (isUrgent, groupByStage, filterBooks + tests)
 ```
+
+`BookCard`, `EditorChip`, `ProgressBar` and `shared/lib` were written before the domain model and come back in stage 3 (UI kit).
 
 ### Target (MVP)
 
@@ -84,9 +105,9 @@ src/
     advance-stage/   "Advance stage" button
     move-book/       drag & drop (dnd-kit)
   entities/
-    book/            model (Book, bookSchema, mocks), api (booksApi, queries), lib (groupByStage, filterBooks), ui (BookCard)
-    stage/           Stage type + STAGES metadata
-    editor/          Editor type, mocks, (EditorChip)
+    book/            model (bookSchema, mocks), api (booksApi, queries), lib (groupByStage, filterBooks), ui (BookCard)
+    stage/           stageSchema + STAGES metadata
+    editor/          editorSchema, mocks, (EditorChip)
   shared/
     ui/              Dashed, Button, IconButton, Kicker, Counter, Tag, SearchInput, AvatarStack, ProgressBar, EditorChip
     lib/             cn, formatDate, formatWords
@@ -97,35 +118,40 @@ src/
 
 **One stage = one board column.** The book's `status` is the column it sits in.
 
-| Stage (target `status`) | Column label         | Subtitle              | Current `BookStatus` |
-| ----------------------- | -------------------- | --------------------- | -------------------- |
-| `acquisition`           | Acquisition          | Submitted manuscripts | `manuscript`         |
-| `developmental`         | Developmental Edit   | Structural revision   | `editing`            |
-| `copyedit`              | Copy Edit            | Line & consistency    | `editing`            |
-| `design`                | Design & Typesetting | Cover & interior      | `design`             |
-| `proof`                 | Final Proof          | Pre-press review      | `proofreading`       |
-| `press`                 | To Press             | Cleared for print     | `ready`              |
+`Stage` (`entities/stage`), in board order:
 
-Currently both edit columns map to `editing`, which is why the model has to change.
+| `Stage`         | Column label         | Subtitle              |
+| --------------- | -------------------- | --------------------- |
+| `acquisition`   | Acquisition          | Submitted manuscripts |
+| `developmental` | Developmental Edit   | Structural revision   |
+| `copyedit`      | Copy Edit            | Line & consistency    |
+| `design`        | Design & Typesetting | Cover & interior      |
+| `proof`         | Final Proof          | Pre-press review      |
+| `press`         | To Press             | Cleared for print     |
 
-Target `Book` (zod schema `bookSchema` in `entities/book/model`, types inferred with `z.infer`):
+`Book` (`bookSchema` in `entities/book/model/book.ts`; the type is inferred with `z.infer`):
 
-| Field        | Type                              | Notes                                   |
-| ------------ | --------------------------------- | --------------------------------------- |
-| `id`         | `string`                          | Manuscript ID, e.g. `MS-2041`           |
-| `title`      | `string`                          |                                         |
-| `author`     | `string`                          |                                         |
-| `status`     | `Stage`                           | Column on the board                     |
-| `position`   | `number`                          | Order within the column (drag & drop)   |
-| `genre`      | `string`                          |                                         |
-| `wordCount`  | `number`                          |                                         |
-| `chapters`   | `number`                          |                                         |
-| `submitted`  | `string` (ISO date)               | New, from the prototype                 |
-| `deadline`   | `string` (ISO date)               |                                         |
-| `progress`   | `number` (0–100)                  |                                         |
-| `flag`       | `"urgent" \| "review" \| "none"`  | Optional                                |
-| `note`       | `string`                          | Latest note, new, from the prototype    |
-| `editor`     | `Editor`                          | Optional                                |
+| Field        | Schema                        | Notes                                   |
+| ------------ | ----------------------------- | --------------------------------------- |
+| `id`         | non-empty string              | Manuscript ID, e.g. `MS-2041`           |
+| `title`      | non-empty string              |                                         |
+| `author`     | non-empty string              |                                         |
+| `status`     | `Stage`                       | Column on the board                     |
+| `position`   | integer ≥ 0                   | Order within the column (drag & drop)   |
+| `genre`      | non-empty string              |                                         |
+| `wordCount`  | integer ≥ 0                   |                                         |
+| `chapters`   | integer ≥ 0                   |                                         |
+| `submitted`  | ISO date `YYYY-MM-DD`         |                                         |
+| `deadline`   | ISO date `YYYY-MM-DD`         |                                         |
+| `progress`   | integer 0–100                 |                                         |
+| `flag`       | `"urgent" \| "review"`        | Optional; absent means no flag          |
+| `note`       | string                        | Latest note (may be empty)              |
+| `editor`     | `Editor`                      | Optional, embedded `{ id, name, avatarUrl? }` |
+| `coverImage` | URL                           | Optional                                |
+
+The current user for the "Assigned to Me" tab is `MOCK_CURRENT_EDITOR_ID` (`entities/editor`) until there is auth.
+
+In MVP-2 the source of truth for this shape will likely move to the Drizzle table, with zod schemas generated from it by `drizzle-zod`.
 
 ## Data flow
 
@@ -165,4 +191,6 @@ widgets / features
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`.
 
-Before merging, each stage must pass `npm run lint`, `npx tsc --noEmit` and `npm run build`.
+Before merging, each stage must pass `npm run lint`, `npx tsc --noEmit`, `npm run test:run` and `npm run build`.
+
+A stage branch collects small commits as the work goes, and the PR to `develop` opens only when the whole stage is done.
