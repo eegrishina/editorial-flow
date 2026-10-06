@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
-@theme {
-  --font-serif: "Playfair Display", "Georgia", serif;
-  --font-mono: "JetBrains Mono", "Courier New", monospace;
-  --font-sans: "Inter", "Helvetica Neue", sans-serif;
+/* Font families come from next/font CSS variables set on <html> (see layout.tsx).
+   "inline" makes utilities use var(--font-*) directly instead of a theme copy,
+   so the variables resolve wherever the class is applied. */
+@theme inline {
+  --font-serif: var(--font-lora), "Georgia", serif;
+  --font-mono: var(--font-jetbrains-mono), "Courier New", monospace;
+  --font-sans: var(--font-inter), "Helvetica Neue", sans-serif;
+}
 
+@theme {
   --color-ground: #f5f4f0;
   --color-card: #ffffff;
   --color-ink: #1a1715;
