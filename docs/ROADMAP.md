@@ -46,10 +46,12 @@ Each stage gets its own branch from `develop` and must pass `npm run lint`, `npx
 - [x] `BookCard` fits a 280px column: the progress percentage no longer gets clipped, the details row stays on one line (long genres truncate)
 - Done before stage 4 so the mock API and the widgets of stages 5–7 are built on the final model shape
 
-#### Stage 4 — Mock API + React Query
-- [ ] `entities/book/api/booksApi.ts`: async `getBooks()` / `updateBook(id, patch)` over an in-memory copy of the mocks, with artificial delay and an optional random failure
-- [ ] `booksQueryOptions`, `useBooks`, `useUpdateBook` (optimistic update + rollback)
-- [ ] `app/providers.tsx` with `QueryClientProvider`
+#### Stage 4 — Mock API + React Query (`feat/mock-api`) ✅
+- [x] `entities/book/api/booksApi.ts`: `BooksApi` interface; async `getBooks()` / `updateBook(id, patch)` over an in-memory copy of the mocks, with artificial delay, schema validation and an optional failure rate (`NEXT_PUBLIC_MOCK_API_FAILURE_RATE`)
+- [x] `bookKeys`, `booksQueryOptions`, `useBooks`, `useUpdateBook` (optimistic update + rollback + refetch)
+- [x] `getQueryClient` (`shared/api`) and `app/providers.tsx` with `QueryClientProvider` + React Query Devtools
+- [x] Home preview reads books through `useBooks`; clicking a card toggles urgent through `useUpdateBook`
+- [x] Unit tests for the API and the hooks
 
 #### Stage 5 — Static board
 - [ ] `widgets/kanban-board` (`BoardColumn`, legend, horizontal scroll)
@@ -124,5 +126,5 @@ Each stage gets its own branch from `develop` and must pass `npm run lint`, `npx
 6. ~~**Word count suffix missing.**~~ Fixed in stage 3: `92.4k w`.
 7. ~~**Font wiring doesn't follow the Next.js recipe.**~~ Fixed in stage 3: `--font-inter` / `--font-lora` / `--font-jetbrains-mono` on `<html>`, mapped in `@theme inline` (recipe: `node_modules/next/dist/docs/01-app/03-api-reference/02-components/font.md`, Tailwind v4 section).
 8. **Many arbitrary values.** Font sizes (`text-[10px]`, …) and letter-spacing (`tracking-[0.22em]`, …) still repeat in `BookCard` and will in the widgets. `Kicker` and `Counter` cover the most common cases; consider `--text-*` / `--tracking-*` tokens in `@theme` if the widgets add more.
-9. **Unused dependencies until their stage:** dnd-kit, React Query, MobX, framer-motion, react-hook-form, @hookform/resolvers.
+9. **Unused dependencies until their stage:** dnd-kit, MobX, framer-motion, react-hook-form, @hookform/resolvers.
 10. **`npm audit` warnings in dev tooling.** `brace-expansion` and `baseline-browser-mapping` come in through `eslint`, `eslint-config-next` and `next`. They don't ship to the browser; review with `npm audit` as a separate chore.

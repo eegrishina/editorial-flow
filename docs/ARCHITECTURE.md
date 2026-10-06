@@ -76,14 +76,17 @@ Inside a slice, code is grouped by purpose:
 
 ```
 src/
-  app/              layout.tsx (fonts, metadata), page.tsx (card preview), globals.css (tokens),
+  app/              layout.tsx (fonts, metadata, Providers), providers.tsx (React Query + Devtools),
+                    page.tsx + BooksPreview.tsx (cards through useBooks), globals.css (tokens),
                     kit/ (style guide page)
   entities/
     stage/          model/stage.ts (STAGE_IDS, stageSchema, STAGES), @x/book.ts
     editor/         model/editor.ts (editorSchema), model/mocks.ts, @x/book.ts
     book/           model/book.ts (bookSchema), model/mocks.ts,
-                    lib/ (isUrgent, groupByStage, filterBooks), ui/BookCard.tsx
+                    lib/ (isUrgent, groupByStage, filterBooks), ui/BookCard.tsx,
+                    api/ (booksApi, bookKeys, booksQueryOptions, useBooks, useUpdateBook)
   shared/
+    api/            getQueryClient
     lib/            cn, formatDate, formatWords
     ui/             Button, IconButton, SearchInput, Kicker, Counter, Dashed,
                     ProgressBar, EditorChip, AvatarStack
@@ -115,7 +118,7 @@ src/
   shared/
     ui/              Dashed, Button, IconButton, Kicker, Counter, SearchInput, AvatarStack, ProgressBar, EditorChip
     lib/             cn, formatDate, formatWords
-    api/             (MVP-2) db client
+    api/             getQueryClient; (MVP-2) db client
 ```
 
 ## Data model
@@ -182,7 +185,16 @@ widgets / features
 
 - **React Query** owns everything that comes from the "server": the book list and mutations (move, advance stage).
 - **MobX** owns UI state only. Never copy server data into a MobX store; derive filtered lists from the query data plus the store's filter.
-- `booksApi.ts` is the seam: going from MVP-1 to MVP-2 changes only its implementation, never the hooks or components.
+- `booksApi.ts` is the seam: it implements the `BooksApi` interface (`getBooks`, `updateBook`). Going from MVP-1 to MVP-2 swaps the implementation, never the hooks or components.
+
+### React Query conventions
+
+- **Keys** live next to the API: `bookKeys.all = ["books"]`. Never type a key by hand in a component.
+- **`booksQueryOptions()`** bundles key + fetcher. Hooks use it (`useQuery(booksQueryOptions())`), and in MVP-2 the server prefetch will use the same options, so client and server can't drift apart.
+- **Mutations are optimistic** (`useUpdateBook`): `onMutate` cancels in-flight fetches, snapshots the cache and applies the patch; `onError` restores the snapshot; `onSettled` invalidates the key so the cache refetches the stored data. React Query 5.100 passes the `QueryClient` to these callbacks as `context.client`.
+- **The client** comes from `getQueryClient()` (`shared/api`): a new one per server render so requests never share data, one per browser session. `app/providers.tsx` renders `QueryClientProvider` and the Devtools (dev builds only) inside `<body>`.
+- **Mock API** (`createMockBooksApi`): an in-memory copy of the mocks that lives until the page reloads, a 400 ms delay, copies in and out (like a network), `bookSchema` validation on update, and an optional failure rate from `NEXT_PUBLIC_MOCK_API_FAILURE_RATE` (0–1) to see rollbacks.
+- **Tests:** the API through `createMockBooksApi({ delayMs: 0 })`; hooks with `renderHook`, a fresh `QueryClient` per test and `vi.spyOn(booksApi, …)`. Hooks call `booksApi.getBooks()` as a method (not a destructured function), which is what makes the spy work.
 - MVP-2 also prefetches on the server: `page.tsx` (Server Component) calls `prefetchQuery`, and the client hydrates through `HydrationBoundary`.
 - Post-MVP forms will use **Server Actions**, so the project shows both mutation styles.
 
