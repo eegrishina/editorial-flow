@@ -1,4 +1,5 @@
 import { cn } from "@/shared/lib";
+import { Counter } from "./Counter";
 
 interface ProgressBarProps {
   value: number; // 0–100
@@ -28,9 +29,7 @@ export const ProgressBar = ({
         )}
       />
 
-      <span className="font-mono text-[10px] tabular-nums text-ink-50 min-w-6.5 text-right">
-        {value.toString().padStart(2, "0")}%
-      </span>
+      <Counter value={value} suffix="%" className="min-w-6.5 text-right" />
     </div>
   );
 };
