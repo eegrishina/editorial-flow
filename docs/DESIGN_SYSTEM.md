@@ -109,7 +109,7 @@ Counters are mono, use `tabular-nums` and are padded to two digits: `<Counter va
 | State        | Markup                                                                                          |
 | ------------ | ----------------------------------------------------------------------------------------------- |
 | Urgent flag  | dot `inline-block h-1.5 w-1.5 rounded-full bg-accent` + label `text-[9px] font-medium uppercase tracking-[0.2em] text-accent` |
-| Review flag  | `◌ review`, same label classes with `text-ink-50`                                               |
+| Awaiting flag | lucide `CircleDashed` (10px, stroke 2) + `awaiting`, same label classes with `text-ink-50`. Not the `◌` glyph: Inter lacks it and the fallback font draws a solid circle. The card shows one flag only: urgent outranks awaiting (the drawer will show both). The prototype's board legend "In review" reads "Awaiting" |
 | Urgent card  | dashed border `border-accent/40` (hover `/70`) with a solid 2px left edge `border-l-2 border-l-accent hover:border-l-accent [border-left-style:solid]`, deadline in `text-accent`, `<ProgressBar accent />`. `border-dashed` sets every side and Tailwind has no per-side style utility, hence the arbitrary property; `hover:border-l-accent` keeps the edge saturated because the hover color rule would otherwise win |
 | Selected card| `outline outline-ink -outline-offset-1`                                                         |
 | Stage / load square | filled `block h-2 w-2 bg-ink` (current: `bg-accent`), empty `h-2 w-2 border border-dashed border-ink/33` |

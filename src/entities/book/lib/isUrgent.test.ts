@@ -4,14 +4,18 @@ import { makeBook } from "./makeBook.fixture";
 
 describe("isUrgent", () => {
   it("is true for an urgent book", () => {
-    expect(isUrgent(makeBook({ flag: "urgent" }))).toBe(true);
+    expect(isUrgent(makeBook({ urgent: true }))).toBe(true);
   });
 
-  it("is false for a book in review", () => {
-    expect(isUrgent(makeBook({ flag: "review" }))).toBe(false);
+  it("is false for a book that is only awaiting a decision", () => {
+    expect(isUrgent(makeBook({ awaiting: true }))).toBe(false);
   });
 
-  it("is false for a book without a flag", () => {
+  it("is true for a book that is both urgent and awaiting", () => {
+    expect(isUrgent(makeBook({ urgent: true, awaiting: true }))).toBe(true);
+  });
+
+  it("is false for a book without flags", () => {
     expect(isUrgent(makeBook())).toBe(false);
   });
 });

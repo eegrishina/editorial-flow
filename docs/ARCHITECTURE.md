@@ -148,10 +148,13 @@ src/
 | `submitted`  | ISO date `YYYY-MM-DD`         |                                         |
 | `deadline`   | ISO date `YYYY-MM-DD`         |                                         |
 | `progress`   | integer 0–100                 |                                         |
-| `flag`       | `"urgent" \| "review"`        | Optional; absent means no flag          |
+| `urgent`     | boolean                       | Deadline pressure; read it through `isUrgent` |
+| `awaiting`   | boolean                       | Waiting for someone else's decision (committee, author, sign-off) |
 | `note`       | string                        | Latest note (may be empty)              |
 | `editor`     | `Editor`                      | Optional, embedded `{ id, name, avatarUrl? }` |
 | `coverImage` | URL                           | Optional                                |
+
+**Stage vs flags.** `status` says where a book is in the pipeline (its column). The flags mark what needs attention on top of that, in any column, and are independent: a book can be urgent and awaiting at once. "Awaiting" is not a stage; the work is paused until someone decides. `isUrgent` is the only place that decides urgency, so it can later become deadline-based without touching filters or UI.
 
 The current user for the "Assigned to Me" tab is `MOCK_CURRENT_EDITOR_ID` (`entities/editor`) until there is auth.
 
