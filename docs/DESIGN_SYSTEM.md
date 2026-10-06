@@ -4,6 +4,8 @@ The visual language comes from a Claude Design prototype (`design-reference/`): 
 
 The prototype is written with inline styles (`style={{ color: T.ink50 }}`). In this app every value comes from Tailwind classes built on the tokens in [`src/app/globals.css`](../src/app/globals.css).
 
+**Style guide:** run `npm run dev` and open [`/kit`](http://localhost:3000/kit). It shows the typography, every `shared/ui` component and the `BookCard` states, so you can compare them with the prototype.
+
 ## Color tokens
 
 | Prototype `TOKENS` | Value                  | `@theme` variable | Tailwind classes                          | Use for                                 |
@@ -32,15 +34,19 @@ Hex + alpha in the prototype maps to Tailwind opacity modifiers:
 
 ## Typography
 
-Three families, each with a fixed role. They're loaded with `next/font` in `src/app/layout.tsx` and exposed as `--font-*` tokens.
+Three families, each with a fixed role.
 
-| Token         | Family (current)   | Role                                                         |
-| ------------- | ------------------ | ------------------------------------------------------------ |
-| `font-serif`  | Lora (Playfair Display until stage 3) | Titles: masthead, section, column, card, drawer |
-| `font-sans`   | Inter              | UI: labels, buttons, tabs, authors, notes                    |
-| `font-mono`   | JetBrains Mono     | Data: manuscript IDs, dates, counters, percentages, word counts |
+| Token         | Family         | next/font variable      | Role                                                         |
+| ------------- | -------------- | ----------------------- | ------------------------------------------------------------ |
+| `font-serif`  | Lora           | `--font-lora`           | Titles: masthead, section, column, card, drawer              |
+| `font-sans`   | Inter          | `--font-inter`          | UI: labels, buttons, tabs, authors, notes (page default)     |
+| `font-mono`   | JetBrains Mono | `--font-jetbrains-mono` | Data: manuscript IDs, dates, counters, percentages, word counts |
 
-**Decision:** the serif is **Lora**, the prototype's default (it also offered Playfair Display, EB Garamond and DM Serif Display). The switch happens in stage 3 together with the font wiring fix, see [ROADMAP.md](ROADMAP.md).
+How it's wired (the Next.js + Tailwind v4 recipe):
+1. `src/app/layout.tsx` loads each font with `next/font/google` and its own `variable`, and puts the variable classes on `<html>`.
+2. `globals.css` maps them in `@theme inline { --font-sans: var(--font-inter), … }`. `inline` makes the utilities reference `var(--font-inter)` directly, so the variable resolves wherever the class is used, Preflight's `html` font included.
+
+Lora is the prototype's default serif; it also offered Playfair Display, EB Garamond and DM Serif Display. To switch, change the import in `layout.tsx` and the variable in `globals.css`.
 
 ### Type scale used in the prototype
 
@@ -62,6 +68,24 @@ Three families, each with a fixed role. They're loaded with `next/font` in `src/
 
 Letter-spacing on uppercase labels ranges from `0.14em` to `0.28em`. Use `0.22em` for kickers, `0.18em` for buttons and `0.2em` for flags.
 
+## Components (`shared/ui`)
+
+Reach for a component before writing the classes by hand. Every component accepts `className`, merged with `cn()`, so a later class wins (`<Counter className="text-accent" />` replaces the default color).
+
+| Component     | Use for                                   | Key props                                                |
+| ------------- | ----------------------------------------- | -------------------------------------------------------- |
+| `Button`      | Any text button                           | `variant`: `ghost` (Filter, Note), `solid` (New Acquisition), `accent` (Advance stage), `subtle` (column "add"); native button props; icon goes first as a child |
+| `IconButton`  | Icon-only button (drawer close)           | `label` (required, becomes `aria-label` and tooltip)     |
+| `SearchInput` | Masthead search                           | `value`, `onChange(value: string)`, `label`, `placeholder` |
+| `Kicker`      | Uppercase label above a value or section  | `children`                                               |
+| `Counter`     | Mono, zero-padded numbers: `03`, `08%`    | `value`, `pad` (default 2), `suffix`                     |
+| `Dashed`      | Standalone dashed divider                 | `vertical`                                               |
+| `ProgressBar` | Thin progress line with a percentage      | `value`, `accent`, `label`                               |
+| `EditorChip`  | Monogram chip with up to two initials     | `name`; size via `className` (`size-6.5`)                |
+| `AvatarStack` | Overlapping chips with `+N` overflow      | `names`, `max` (default 4)                               |
+
+Buttons default to `type="button"`, use `cursor-pointer` (Tailwind v4 leaves buttons on the default cursor) and show a focus ring on keyboard focus.
+
 ## Recurring patterns
 
 ### Surfaces
@@ -69,37 +93,14 @@ Letter-spacing on uppercase labels ranges from `0.14em` to `0.28em`. Use `0.22em
 ```txt
 Card / panel      bg-card border border-dashed border-rule
 Column body       bg-ground border border-dashed border-rule border-t-0
-Dashed hairline   <Dashed />   (shared/ui, planned)
+Dashed hairline   <Dashed />
 ```
 
 `Dashed` reproduces the prototype's hairline: a `repeating-linear-gradient` with 4px dashes and 4px gaps in `ink` at 18% opacity. This looks different from the browser's `border-dashed`. Use `Dashed` for standalone dividers and `border-dashed border-rule` for box borders.
 
-### Buttons
-
-```txt
-Ghost   flex items-center gap-2 px-3 py-2 bg-card border border-dashed border-rule
-        font-sans text-[10px] font-medium uppercase tracking-[0.18em] text-ink hover:bg-ground/50
-Solid   flex items-center gap-2 px-3 py-2 bg-ink text-ground
-        font-sans text-[10px] font-medium uppercase tracking-[0.18em]
-Accent  flex items-center justify-center gap-2 py-2.5 bg-accent text-card
-        font-sans text-[10px] font-semibold uppercase tracking-[0.2em]
-Add     (column) flex items-center justify-center gap-1.5 py-2 border border-dashed border-rule
-        text-[10px] uppercase tracking-[0.18em] text-ink-50 hover:bg-card
-```
-
-These will become `<Button variant="ghost | solid | accent">` in `shared/ui`.
-
 ### Counters and numbers
 
-Counters are mono, use `tabular-nums` and are padded to two digits: `03`, `14`, `08%`.
-
-```tsx
-<span className="font-mono text-[10px] tabular-nums text-ink-50">
-  {String(count).padStart(2, "0")}
-</span>
-```
-
-Urgent counters in a column header use `text-accent` and read `· 2!`.
+Counters are mono, use `tabular-nums` and are padded to two digits: `<Counter value={3} />` → `03`. Urgent counters in a column header use `text-accent` and read `· 2!`.
 
 ### Status indicators
 
@@ -107,7 +108,7 @@ Urgent counters in a column header use `text-accent` and read `· 2!`.
 | ------------ | ----------------------------------------------------------------------------------------------- |
 | Urgent flag  | dot `inline-block h-1.5 w-1.5 rounded-full bg-accent` + label `text-[9px] font-medium uppercase tracking-[0.2em] text-accent` |
 | Review flag  | `◌ review`, same label classes with `text-ink-50`                                               |
-| Urgent card  | 2px solid accent left border (see [known issues](ROADMAP.md#known-issues)), deadline in `text-accent`, progress bar in `bg-accent` |
+| Urgent card  | `border-l-2 border-l-accent [border-left-style:solid]` (`border-dashed` sets every side, Tailwind has no per-side style utility), deadline in `text-accent`, `<ProgressBar accent />` |
 | Selected card| `outline outline-ink -outline-offset-1`                                                         |
 | Stage / load square | filled `block h-2 w-2 bg-ink` (current: `bg-accent`), empty `h-2 w-2 border border-dashed border-ink/33` |
 
@@ -153,6 +154,5 @@ Taken from porting `ManuscriptCard` to `entities/book/ui/BookCard.tsx`:
 
 ## Not ported
 
-`design-reference/tweaks-panel.jsx` is a Claude Design tool for live font switching, not part of the product. The fonts it offers are listed under [Typography](#typography).
-
-Note: the cheat sheet above was written while `BookCard` lived in the working tree. That code is set aside until stage 3 and isn't in `develop` yet.
+- `design-reference/tweaks-panel.jsx` is a Claude Design tool for live font switching, not part of the product. The fonts it offers are listed under [Typography](#typography).
+- `GenreTag` stays inline in `BookCard`: the prototype uses it in one place only.

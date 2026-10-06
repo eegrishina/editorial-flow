@@ -17,7 +17,7 @@ Editorial Flow is a kanban board for a book publishing workflow: Next.js 16 App 
 - **FSD layers:** `app → widgets → features → entities → shared`. Import only from lower layers, and only through a slice's `index.ts` (`@/entities/book`, not `@/entities/book/ui/BookCard`). Slices on the same layer don't import each other, except entities through the `@x` cross-import API (`@/entities/stage/@x/book`).
 - **Domain models:** zod schemas in `entities/*/model`; types via `z.infer`, not hand-written interfaces.
 - **Tests:** Vitest, colocated `*.test.ts`; build test data with factories (`*.fixture.ts`), not mocks.
-- **Styling:** Tailwind classes built on `@theme` tokens from `src/app/globals.css` (`bg-card`, `text-ink-50`, `border-rule`, `text-accent`). No hex colors and no inline `style` for static values. Merge classes with `cn()` from `@/shared/lib`.
+- **Styling:** Tailwind classes built on `@theme` tokens from `src/app/globals.css` (`bg-card`, `text-ink-50`, `border-rule`, `text-accent`). No hex colors and no inline `style` for static values. Merge classes with `cn()` from `@/shared/lib`. Use `shared/ui` components (`Button`, `Kicker`, `Counter`, …) before writing their classes by hand; check visuals on `/kit`.
 - **Components:** PascalCase files, named exports, a `<Name>Props` interface, accept `className`. Add `"use client"` only when hooks, handlers or browser APIs are used.
 - **State:** React Query for server data (book list, mutations with optimistic updates). MobX for UI state only (filter, search, selected book). Never copy server data into MobX.
 - **Data:** mocks live in `entities/*/model`. Data access goes through `entities/book/api/booksApi.ts`, the single seam between the mock API (MVP-1) and Route Handlers + SQLite (MVP-2).

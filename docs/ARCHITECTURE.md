@@ -67,7 +67,8 @@ Inside a slice, code is grouped by purpose:
 - [Vitest](https://vitest.dev/): `npm test` (watch) or `npm run test:run` (single run). Config: `vitest.config.mts`.
 - Test files sit next to the code they test: `filterBooks.ts` → `filterBooks.test.ts`.
 - Test data comes from factories (`makeBook.fixture.ts`), not from mocks, so tests don't break when mock content changes. Mocks get their own test that validates them against the schema.
-- Environment is `node` for now (pure functions). Component tests (stage 3) will add `jsdom` and React Testing Library.
+- Environment is `jsdom`. Components are tested with React Testing Library: query by role, label or text (`getByRole("button", { name: "Close" })`), the way a user finds them. jest-dom adds matchers like `toBeInTheDocument` and `toHaveClass`. Setup lives in `vitest.setup.ts`.
+- Tests check behavior and markup, not looks. Check visuals on the `/kit` page; for tricky CSS (e.g. which rule wins), inspect the built CSS.
 
 ## Slice map
 
@@ -75,15 +76,18 @@ Inside a slice, code is grouped by purpose:
 
 ```
 src/
-  app/              layout.tsx (fonts, metadata), page.tsx (placeholder), globals.css (tokens)
+  app/              layout.tsx (fonts, metadata), page.tsx (card preview), globals.css (tokens),
+                    kit/ (style guide page)
   entities/
     stage/          model/stage.ts (STAGE_IDS, stageSchema, STAGES), @x/book.ts
     editor/         model/editor.ts (editorSchema), model/mocks.ts, @x/book.ts
     book/           model/book.ts (bookSchema), model/mocks.ts,
-                    lib/ (isUrgent, groupByStage, filterBooks + tests)
+                    lib/ (isUrgent, groupByStage, filterBooks), ui/BookCard.tsx
+  shared/
+    lib/            cn, formatDate, formatWords
+    ui/             Button, IconButton, SearchInput, Kicker, Counter, Dashed,
+                    ProgressBar, EditorChip, AvatarStack
 ```
-
-`BookCard`, `EditorChip`, `ProgressBar` and `shared/lib` were written before the domain model and come back in stage 3 (UI kit).
 
 ### Target (MVP)
 
@@ -109,7 +113,7 @@ src/
     stage/           stageSchema + STAGES metadata
     editor/          editorSchema, mocks, (EditorChip)
   shared/
-    ui/              Dashed, Button, IconButton, Kicker, Counter, Tag, SearchInput, AvatarStack, ProgressBar, EditorChip
+    ui/              Dashed, Button, IconButton, Kicker, Counter, SearchInput, AvatarStack, ProgressBar, EditorChip
     lib/             cn, formatDate, formatWords
     api/             (MVP-2) db client
 ```
