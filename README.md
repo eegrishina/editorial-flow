@@ -30,6 +30,16 @@ npm run dev      # http://localhost:3000
 
 A pre-commit hook (husky + lint-staged) runs `eslint --fix` on staged `*.ts` / `*.tsx` files.
 
+### Environment variables
+
+Optional, in `.env.local` (git-ignored). Restart `npm run dev` after changing it.
+
+| Variable | Default | What it does |
+| -------- | ------- | ------------ |
+| `NEXT_PUBLIC_MOCK_API_FAILURE_RATE` | `0` | Share of mock API updates that fail (0–1). Set to `1` to watch optimistic updates roll back. |
+
+Data lives in an in-memory mock API until MVP-2, so changes reset on page reload.
+
 ## Tech stack
 
 | Area          | Library                                            | Status      |
@@ -40,7 +50,7 @@ A pre-commit hook (husky + lint-staged) runs `eslint --fix` on staged `*.ts` / `
 | Fonts         | `next/font`: Inter, Lora, JetBrains Mono           | in use      |
 | Validation    | `zod` (domain schemas, types via `z.infer`)        | in use      |
 | Tests         | Vitest, React Testing Library, jest-dom, jsdom     | in use      |
-| Server state  | `@tanstack/react-query`                            | planned     |
+| Server state  | `@tanstack/react-query` + Devtools                 | in use      |
 | UI state      | `mobx` + `mobx-react-lite`                         | planned     |
 | Drag & drop   | `@dnd-kit/core`, `@dnd-kit/sortable`               | planned     |
 | Animation     | `framer-motion`                                    | planned     |

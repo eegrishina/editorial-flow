@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Lora, JetBrains_Mono } from "next/font/google";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,12 +30,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Переменные шрифтов вешаем на <html>, чтобы их видели и Preflight, и утилиты font-*
+    // Font variables go on <html> so both Preflight and the font-* utilities can see them
     <html
       lang="en"
       className={`${inter.variable} ${lora.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-ground text-ink">{children}</body>
+      <body className="min-h-full bg-ground text-ink">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

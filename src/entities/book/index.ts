@@ -6,3 +6,8 @@ export { groupByStage } from "./lib/groupByStage";
 export { filterBooks } from "./lib/filterBooks";
 export type { BookFilter, FilterBooksParams } from "./lib/filterBooks";
 export { BookCard } from "./ui/BookCard";
+export { booksApi, createMockBooksApi } from "./api/booksApi";
+export type { BooksApi, BookPatch } from "./api/booksApi";
+export { bookKeys, booksQueryOptions } from "./api/queries";
+export { useBooks } from "./api/useBooks";
+export { useUpdateBook } from "./api/useUpdateBook";

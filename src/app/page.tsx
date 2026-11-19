@@ -1,4 +1,4 @@
-import { BookCard, MOCK_BOOKS } from "@/entities/book";
+import { BooksPreview } from "./BooksPreview";
 
 export default function HomePage() {
   return (
@@ -7,9 +7,7 @@ export default function HomePage() {
         <p className="font-serif text-sm text-ink-30 italic">
           High-Fidelity FSD Cards:
         </p>
-        {MOCK_BOOKS.map((book) => (
-          <BookCard key={book.id} book={book} />
-        ))}
+        <BooksPreview />
       </div>
     </div>
   );
