@@ -22,5 +22,8 @@ Editorial Flow is a kanban board for a book publishing workflow: Next.js 16 App 
 - **State:** React Query for server data (book list, mutations with optimistic updates). MobX for UI state only (filter, search, selected book). Never copy server data into MobX.
 - **Data:** mocks live in `entities/*/model`. Data access goes through `entities/book/api/booksApi.ts`, the single seam between the mock API (MVP-1) and Route Handlers + SQLite (MVP-2).
 - **Design reference:** `design-reference/` is the Claude Design prototype. Read it to match the design, but never import from it.
-- **Docs:** written in English. Update `docs/ROADMAP.md` (checkboxes, porting status, known issues) when a stage lands.
+- **Language:** code, comments, commit messages and docs are in English. Update `docs/ROADMAP.md` (checkboxes, porting status, known issues) when a stage lands.
+- **Comments:** only to explain non-obvious mechanics (why a CSS rule order matters, why `@theme inline`). Never describe the look, the layout or obvious behavior.
 - **Checks before commit:** `npm run lint`, `npx tsc --noEmit`, `npm run test:run`, `npm run build`. Commits follow Conventional Commits.
+- **Git:** push only when asked. PRs are opened on GitHub by hand, so prepare a title and description instead of creating one.
+- **Claude Code:** `.claude/skills/` has `/finish-stage` (close a stage: checks, review, docs, commit, PR text) and `/port-component` (port a prototype component). `.claude/agents/fsd-reviewer.md` reviews a diff against these rules.
