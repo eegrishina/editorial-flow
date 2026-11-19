@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Переменные шрифтов вешаем на <html>, чтобы их видели и Preflight, и утилиты font-*
+    // Font variables go on <html> so both Preflight and the font-* utilities can see them
     <html
       lang="en"
       className={`${inter.variable} ${lora.variable} ${jetbrainsMono.variable} h-full antialiased`}
