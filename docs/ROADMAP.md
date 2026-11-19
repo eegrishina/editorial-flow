@@ -52,6 +52,7 @@ Each stage gets its own branch from `develop` and must pass `npm run lint`, `npx
 - [x] `getQueryClient` (`shared/api`) and `app/providers.tsx` with `QueryClientProvider` + React Query Devtools
 - [x] Home preview reads books through `useBooks`; clicking a card toggles urgent through `useUpdateBook`
 - [x] Unit tests for the API and the hooks
+- [x] ESLint: `@tanstack/eslint-plugin-query` (recommended rules) and `@typescript-eslint/no-deprecated` with typed linting
 
 #### Stage 5 — Static board
 - [ ] `widgets/kanban-board` (`BoardColumn`, legend, horizontal scroll)
@@ -89,6 +90,9 @@ Each stage gets its own branch from `develop` and must pass `npm run lint`, `npx
 - **Stats bento:** `widgets/stats-bento` (`StatBlock`, `MiniBars`, `DeadlineDots`, `EditorWorkload`)
 - **Deadline-based urgency:** "due soon" / "overdue" computed from `deadline` inside `isUrgent`; mock dates generated relative to today, since the current ones (May–June 2026) are all in the past
 - **Forms:** New Acquisition, column "add", notes. react-hook-form + zod, mutations via Server Actions
+- **Archive:** take a book off the board without deleting it, browse the archive and restore from it. Archived is a state on top of the stage (like the flags), not a seventh stage. Needs the backend from stage 9
+- **Auth and roles (demo sign-in):** no registration or passwords. The sign-in screen lists editors with their roles; picking one stores the user in a cookie, and Server Actions sign in and out. Route Handlers read the cookie and check the role on the server. A "sign in as…" switcher in the masthead lets anyone try every role. Replaces `MOCK_CURRENT_EDITOR_ID` for the "Assigned to Me" tab. The README must say this is a demo mode, not security
+- **Delete:** `DELETE /api/books/[id]` and `useDeleteBook` (optimistic removal), allowed only for certain roles. Needs auth and roles; the server checks the role, and the UI only hides the action
 - **List and Calendar views** (routes or `?view=` search param)
 - **E2E tests:** Playwright ("drag a card → reload → it stays")
 
